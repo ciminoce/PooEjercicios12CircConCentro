@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using PooEjercicios12CircConCentro.Datos;
 using PooEjercicios12CircConCentro.Entidades;
 using Color = PooEjercicios12CircConCentro.Entidades.Color;
 
@@ -20,6 +21,8 @@ namespace PooEjercicios12CircConCentro.Windows
             InitializeComponent();
         }
 
+        private bool esEdicion = false;
+        //private RepositorioCircunferencias repositorio;
         public Circunferencia GetCircunferencia()
         {
             return circunferencia;
@@ -27,9 +30,11 @@ namespace PooEjercicios12CircConCentro.Windows
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            //repositorio = new RepositorioCircunferencias();
             CargarDatosComboColores(ref ColoresComboBox);
             if (circunferencia != null)
             {
+                esEdicion = true;
                 RadioTextBox.Text = circunferencia.Radio.ToString();
                 XTextBox.Text = circunferencia.Centro.X.ToString();
                 YTextBox.Text = circunferencia.Centro.Y.ToString();
@@ -86,8 +91,47 @@ namespace PooEjercicios12CircConCentro.Windows
                 {
                     circunferencia.Borde = Borde.Rayas;
                 }
-                this.DialogResult = DialogResult.OK;
+
+                if (!RepositorioCircunferencias.GetInstancia().Existe(circunferencia))
+                {
+                    if (!esEdicion)
+                    {
+                        RepositorioCircunferencias.GetInstancia().Agregar(circunferencia);
+                        MessageBox.Show("Registro Agregado!!!", "Mensaje", MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        DialogResult dr = MessageBox.Show("¿Ingresa otro registro?", "Pregunta", MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                        if (dr == DialogResult.Yes)
+                        {
+                            InicializarControles();
+                            circunferencia = null;
+                        }
+                        else
+                        {
+                            this.DialogResult = DialogResult.OK;
+                        }
+
+                    }
+
+                    DialogResult = DialogResult.OK;
+                }
+                else
+                {
+                    MessageBox.Show("Circunferencia repetida!!!!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                    
+                }
             }
+        }
+
+        private void InicializarControles()
+        {
+            XTextBox.Clear();
+            YTextBox.Clear();
+            RadioTextBox.Clear();
+            ColoresComboBox.SelectedIndex = 0;
+            SolidoRadioButton.Checked = true;
+            XTextBox.Focus();
         }
 
         private bool ValidarDatos()

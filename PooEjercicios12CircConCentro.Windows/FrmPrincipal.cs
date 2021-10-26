@@ -23,20 +23,27 @@ namespace PooEjercicios12CircConCentro.Windows
             FrmCircunferenciaEdit frm = new FrmCircunferenciaEdit();
             frm.Text = "Agregar Circunferencia";
             DialogResult dr = frm.ShowDialog(this);
-            if (dr == DialogResult.OK)
-            {
-                Circunferencia circ = frm.GetCircunferencia();
-                if (repositorio.Existe(circ))
-                {
-                    MessageBox.Show("Circunferencia existente...!!!");
-                    return;
-                }
-                repositorio.Agregar(circ);
-                DataGridViewRow r = ConstruirFila();
-                SetearFila(r, circ);
-                AgregarFila(r);
-            }
 
+            //if (dr == DialogResult.OK)
+            //{
+            //    Circunferencia circ = frm.GetCircunferencia();
+            //    if (repositorio.Existe(circ))
+            //    {
+            //        MessageBox.Show("Circunferencia existente...!!!");
+            //        return;
+            //    }
+            //    repositorio.Agregar(circ);
+            //    DataGridViewRow r = ConstruirFila();
+            //    SetearFila(r, circ);
+            //    AgregarFila(r);
+            //}
+            RecargarGrilla();
+        }
+
+        private void RecargarGrilla()
+        {
+            lista = RepositorioCircunferencias.GetInstancia().GetLista();
+            MostrarDatosGrilla();
         }
 
         private DataGridViewRow ConstruirFila()
@@ -57,38 +64,31 @@ namespace PooEjercicios12CircConCentro.Windows
             r.Cells[cmnRadio.Index].Value = circ.Radio;
             r.Cells[cmnBorde.Index].Value = circ.Borde;
             r.Cells[cmnRelleno.Index].Value = circ.Relleno;
+            r.Cells[cmnPerimetro.Index].Value = circ.GetPerimetro();
+            r.Cells[cmnSuperficie.Index].Value = circ.GetSuperficie();
 
             r.Tag = circ;
 
         }
-        private RepositorioCircunferencias repositorio;
+        //private RepositorioCircunferencias repositorio;
         private List<Circunferencia> lista;
         private void tsbSalir_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
-        
+
+        private int cantidadRegistros;
         private void frmMenuPrincipal_Load(object sender, EventArgs e)
         {
-            repositorio = new RepositorioCircunferencias();
-            try
+            //repositorio = new RepositorioCircunferencias();
+            cantidadRegistros = RepositorioCircunferencias.GetInstancia().GetCantidad();
+            if (cantidadRegistros>0)
             {
-                lista=repositorio.GetLista();
-                if (repositorio.GetCantidad() > 0)
-                {
-                    MostrarDatosGrilla(repositorio.GetLista());
-                }
-
-            }
-            catch (Exception)
-            {
-
-                MessageBox.Show("No hay registros en el archivo", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                RecargarGrilla();
             }
         }
 
-        private void MostrarDatosGrilla(List<Circunferencia> lista)
+        private void MostrarDatosGrilla()
         {
             dgvDatos.Rows.Clear();
             foreach (var item in lista)
@@ -115,13 +115,13 @@ namespace PooEjercicios12CircConCentro.Windows
                 if (dr == DialogResult.OK)
                 {
                     circCopia = frm.GetCircunferencia();
-                    if (repositorio.Existe(circCopia))
+                    if (RepositorioCircunferencias.GetInstancia().Existe(circCopia))
                     {
                         SetearFila(r,circ);
                         MessageBox.Show("Circunferencia repetida!!");
                         return;
                     }
-                    repositorio.Editar(circ,circCopia);
+                    RepositorioCircunferencias.GetInstancia().Editar(circ,circCopia);
                     SetearFila(r, circCopia);
                 }
             }
@@ -139,7 +139,7 @@ namespace PooEjercicios12CircConCentro.Windows
                     MessageBoxDefaultButton.Button2);
                 if (dr == DialogResult.Yes)
                 {
-                    repositorio.Borrar(circ);
+                    RepositorioCircunferencias.GetInstancia().Borrar(circ);
                     dgvDatos.Rows.Remove(r);
                     MessageBox.Show("Registro borrado", "Confirmar Baja", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 

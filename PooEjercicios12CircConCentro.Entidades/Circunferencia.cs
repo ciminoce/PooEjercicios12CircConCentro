@@ -35,5 +35,15 @@ namespace PooEjercicios12CircConCentro.Entidades
         {
             return this.MemberwiseClone();
         }
+
+        public double GetSuperficie()
+        {
+            return Math.PI * Math.Pow(Radio, 2);
+        }
+
+        public double GetPerimetro()
+        {
+            return 2 * Math.PI * Radio;
+        }
     }
 }

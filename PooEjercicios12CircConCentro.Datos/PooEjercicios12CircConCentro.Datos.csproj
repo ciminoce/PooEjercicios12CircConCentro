@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ManejadorDeArchivos.cs" />
     <Compile Include="RepositorioCircunferencias.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
